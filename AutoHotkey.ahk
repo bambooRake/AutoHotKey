@@ -52,24 +52,26 @@ return
 
 #IF
 
-#IF WinActive("ahk_class mpv")
+#IF WinActive("ahk_exe Baka MPlayer.exe") and !GetKeyState("vk1Dsc07B","P") and !GetKeyState("vkEBsc07B","P")
 *d::
 	Send,{Blind}{Left}
 	return
 *f::
 	Send,{Blind}{Right}
 	return
+;mpv seek +300
 *g::
-	Send,{Blind}{Up}
+	Send,{Shift Down}{right}{Shift Up}
 	return
+;mpv seek -300
 *s::
-	Send,{Blind}{Down}
+	Send,{Shift Down}{left}{Shift Up}
 	return
 *r::
-	Send,{Shift Down}{.}{Shift Up}
+	Send,{Ctrl Down}{right}{Ctrl Up}
 	return
 *4::
-	Send,{Shift Down}{,}{Shift Up}
+	Send,{Ctrl Down}{left}{Ctrl Up}
 	return
 *Enter::
 	Send,{Blind}{f}
