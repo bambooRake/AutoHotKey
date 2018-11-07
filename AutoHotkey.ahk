@@ -5,6 +5,15 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 ;#InstallKeybdHook
 #UseHook
 
+global LOG_FILE
+LOG_FILE=C:\AHK.log
+
+WriteLog(log)
+{
+    logText = [%A_Now%]%log%
+    FileAppend,  %log%, %LOG_FILE%
+}
+
 ;keyswapで
 ;mac ひらがな→変換 左Win→左Alt 左Alt→左Win
 ;win 左Ctrl→Caps Caps→左Ctrl
@@ -34,13 +43,14 @@ ControlClick OK, スポンサーセッション ahk_class #32770
 return 
 */
 
+/*
 #IF WinActive("ahk_exe GuiltyGearXrd.exe")
-*vk1Dsc07B::w
+*vk1D::w
 *s::a
 *d::s
 *f::d
 
-*vk1Csc079::j
+*vk1C::j
 *j::u
 *k::i
 *l::o
@@ -48,11 +58,10 @@ return
 
 *i::p
 *o::q
-
-
 #IF
+*/
 
-#IF WinActive("ahk_exe Baka MPlayer.exe") and !GetKeyState("vk1Dsc07B","P") and !GetKeyState("vkEBsc07B","P")
+#IF WinActive("ahk_exe Baka MPlayer.exe") and !GetKeyState("vk1D","P") and !GetKeyState("vkEB","P")
 *d::
 	Send,{Blind}{Left}
 	return
@@ -78,11 +87,11 @@ return
 	return
 #IF
 
-;vk1Dsc07B-無変換
-;vkFFsc145-pause
-;vk1Csc079-変換
+;vk1D-無変換
+;vkFF-pause
+;vk1C-変換
 
-*vkACsc0H0::ESCAPE
+*vkAC::Esc
 
 
 XButton2::
@@ -97,37 +106,36 @@ XButton1::
 ;RButton::MButton
 
 ;IME ON/OFF
-*vk1Csc079::
-	KeyWait, vk1Csc079, T0.2    ; 0.2秒以上キーが離されなかったら、ErrorLevel=1
+*vk1C::
+	KeyWait, vk1C, T0.2    ; 0.2秒以上キーが離されなかったら、ErrorLevel=1
 	if ErrorLevel
 		;短押し
 		Send,{Ctrl Down}{]}{Ctrl Up}
 	else
 		;長押し
 		Send,{Ctrl Down}{[}{Ctrl Up}
-	keywait, vk1Csc079
+	keywait, vk1C
 	return
 
 ;IME ON/OFF bluetooth用 右winを無変換に　日本語キーボードとコードは異なる模様
-*vkFFsc079::
-	KeyWait, vkFFsc079, T0.2    ; 0.2秒以上キーが離されなかったら、ErrorLevel=1
+*vkFF::
+	KeyWait, vkFF, T0.2    ; 0.2秒以上キーが離されなかったら、ErrorLevel=1
 	if ErrorLevel
 		;短押し
 		Send,{Ctrl Down}{]}{Ctrl Up}
 	else
 		;長押し
 		Send,{Ctrl Down}{[}{Ctrl Up}
-	keywait, vkFFsc079
+	keywait, vkFF
 	return
 
-*vk1Dsc07B::return
-*vkEBsc07B::return
+*vk1D::return
+*vkEB::return
 
-
-*vk1Dsc07B up::
-*vkEBsc07B up::
+*vk1D up::
+*vkEB up::
 	if GetKeyState("Shift","P"){
-		Send,{Blind}{Sift Up}
+		Send,{Blind}{Shift Up}
 	}
 	if GetKeyState("Ctrl","P"){
 		Send,{Blind}{Ctrl Up}
@@ -148,7 +156,7 @@ XButton1::
 	return
 
 
-#IF GetKeyState("vk1Dsc07B","P") or GetKeyState("vkEBsc07B","P")
+#IF GetKeyState("vk1D","P") or GetKeyState("vkEB","P")
 *F1::Edit
 *F2::Reload
 
@@ -161,7 +169,7 @@ Break
 MouseClick, LEFT
 Sleep, 100
 }
-Return 
+return 
 
 *3::
   Send,{LWin Down}{t}{LWin Up}
@@ -172,14 +180,18 @@ Return
 		Send {WheelUp}
 		Sleep, 30 ; miliseconds
 	}
-	Return
+	return
 *5::WheelLeft
 *6::WinSet, AlwaysOnTop, TOGGLE, A
+*Tab::
+	Send,{Blind}{F13}
+	return
 *q::
 	Send,{Alt Down}{F4}{Alt Up}
 	return
 
 *w::
+	WriteLog("test")
 	return
 *e::
 	Send,{Blind}{End}
@@ -190,7 +202,7 @@ Return
 		Send {WheelDown}
 		Sleep, 30 ; miliseconds
 	}
-	Return
+	return
 
 *t::WheelRight
 *y::
