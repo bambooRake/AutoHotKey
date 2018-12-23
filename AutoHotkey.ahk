@@ -2,7 +2,7 @@
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 ;SetTitleMatchMode,2
-;#InstallKeybdHook
+#InstallKeybdHook
 #UseHook
 
 global LOG_FILE
@@ -274,17 +274,17 @@ return
 	Send,{Blind}{SPACE}
 	return
 
-*Left::
-	Run DisplaySwitch.exe /internal
-	return
-*Down::
-	Run DisplaySwitch.exe /extend
-	return
+; *Left::
+; 	Run DisplaySwitch.exe /internal
+; 	return
+; *Down::
+; 	Run DisplaySwitch.exe /extend
+; 	return
 
-*Right::
-	;Run DisplaySwitch.exe /extend
-	Run DisplaySwitch.exe /external
-	return
+; *Right::
+; 	;Run DisplaySwitch.exe /extend
+; 	Run DisplaySwitch.exe /external
+; 	return
 #IF
 
 !0::
