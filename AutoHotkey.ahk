@@ -108,13 +108,24 @@ XButton1::
 ;IME ON/OFF
 *vk1C::
 	KeyWait, vk1C, T0.2    ; 0.2秒以上キーが離されなかったら、ErrorLevel=1
-	if ErrorLevel
-		;短押し
-		Send,{Ctrl Down}{]}{Ctrl Up}
-	else
+	if (ErrorLevel) {
 		;長押し
-		Send,{Ctrl Down}{[}{Ctrl Up}
-	keywait, vk1C
+		Send,{Ctrl Down}{F24}{Ctrl Up}
+
+		Progress, m2 b fs18 zh0, 日本語, , , Courier New
+		Sleep, 500
+		Progress, Off
+		
+		keywait, vk1C
+	} else {
+		;短押し
+		Send,{F24}
+		keywait, vk1C
+
+		Progress, m2 b fs18 zh0, English, , , Courier New
+		Sleep, 500
+		Progress, Off
+	}
 	return
 
 ;IME ON/OFF bluetooth用 右winを無変換に　日本語キーボードとコードは異なる模様
