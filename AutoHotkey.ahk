@@ -5,6 +5,33 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 #InstallKeybdHook
 #UseHook
 
+;-----------------------------------------------------------
+; IMEの状態をセット
+;   SetSts          1:ON / 0:OFF
+;   WinTitle="A"    対象Window
+;   戻り値          0:成功 / 0以外:失敗
+;-----------------------------------------------------------
+IME_SET(SetSts, WinTitle="A")    {
+	
+	ControlGet,hwnd,HWND,,,%WinTitle%
+	Progress, m2 b fs18 zh0, %WinTitle% , , Courier New
+	if	(WinActive(WinTitle))	{
+		ptrSize := !A_PtrSize ? 4 : A_PtrSize
+	    VarSetCapacity(stGTI, cbSize:=4+4+(PtrSize*6)+16, 0)
+	    NumPut(cbSize, stGTI,  0, "UInt")   ;	DWORD   cbSize;
+		hwnd := DllCall("GetGUIThreadInfo", Uint,0, Uint,&stGTI)
+	             ? NumGet(stGTI,8+PtrSize,"UInt") : hwnd
+	}
+
+
+    return DllCall("SendMessage"
+          , UInt, DllCall("imm32\ImmGetDefaultIMEWnd", Uint,hwnd)
+          , UInt, 0x0283  ;Message : WM_IME_CONTROL
+          ,  Int, 0x006   ;wParam  : IMC_SETOPENSTATUS
+          ,  Int, SetSts) ;lParam  : 0 or 1
+}
+
+
 global LOG_FILE
 LOG_FILE=C:\AHK.log
 
@@ -87,6 +114,30 @@ return
 	return
 #IF
 
+#IF WinActive("ahk_exe PotPlayerMini64.exe") and !GetKeyState("vk1D","P") and !GetKeyState("vkEB","P")
+*d::
+	Send,{Blind}{Left}
+	return
+*f::
+	Send,{Blind}{Right}
+	return
+*g::
+	Send,{Alt Down}{Ctrl Down}{right}{Ctrl Up}{Alt Up}
+	return
+*s::
+	Send,{Alt Down}{Ctrl Down}{left}{Ctrl Up}{Alt Up}
+	return
+*r::
+	Send,{Blind}{PgDn}
+	return
+*4::
+	Send,{Blind}{PgUp}
+	return
+*b::
+	Send,{Shift Down}{Delete}{Shift Up}
+	return
+#IF
+
 ;vk1D-無変換
 ;vkFF-pause
 ;vk1C-変換
@@ -110,7 +161,7 @@ XButton1::
 	KeyWait, vk1C, T0.2    ; 0.2秒以上キーが離されなかったら、ErrorLevel=1
 	if (ErrorLevel) {
 		;長押し
-		Send,{Ctrl Down}{F24}{Ctrl Up}
+		IME_SET(1)
 
 		Progress, m2 b fs18 zh0, 日本語, , , Courier New
 		Sleep, 500
@@ -119,7 +170,7 @@ XButton1::
 		keywait, vk1C
 	} else {
 		;短押し
-		Send,{F24}
+		IME_SET(0)
 		keywait, vk1C
 
 		Progress, m2 b fs18 zh0, English, , , Courier New
@@ -323,3 +374,5 @@ return
   else
     WinSet, Transparent, %itp%, A
   return
+
+
