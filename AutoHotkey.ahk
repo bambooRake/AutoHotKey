@@ -30,120 +30,30 @@ IME_SET(SetSts, WinTitle="A")    {
           ,  Int, SetSts) ;lParam  : 0 or 1
 }
 
-; global LOG_FILE
-; LOG_FILE=C:\AHK.log
+;IME ON/OFF
+*vk1C::
+	KeyWait, vk1C, T0.2    ; 0.2秒以上キーが離されなかったら、ErrorLevel=1
+	if (ErrorLevel) {
+		;長押し
+		IME_SET(1)
 
-; WriteLog(log)
-; {
-;     logText = [%A_Now%]%log%
-;     FileAppend,  %log%, %LOG_FILE%
-; }
+		Progress, m2 b fs18 zh0, 日本語, , , Courier New
+		Sleep, 300
+		Progress, Off
+		
+		keywait, vk1C
+	} else {
+		;短押し
+		IME_SET(0)
+		keywait, vk1C
 
-; ;keyswapで
-; ;mac ひらがな→変換 左Win→左Alt 左Alt→左Win
-; ;win 左Ctrl→Caps Caps→左Ctrl
-
-
-; /*
-; #IF A_COMPUTERNAME = "WIN8MBA"
-; ;mbaの独自設定
-; #IF
-; */
-
-; /*
-; #IF A_COMPUTERNAME = "G2120PC"
-; ;デスクトップの独自設定
-; #IF
-; */
-
-; /*
-; SetTimer AutoClose,5000 
-; return 
-
-; AutoClose: 
-; IfWinExist, スポンサーセッション ahk_class #32770 
-; { 
-; ControlClick OK, スポンサーセッション ahk_class #32770 
-; } 
-; return 
-; */
-
-; /*
-; #IF WinActive("ahk_exe GuiltyGearXrd.exe")
-; *vk1D::w
-; *s::a
-; *d::s
-; *f::d
-
-; *vk1C::j
-; *j::u
-; *k::i
-; *l::o
-; *;::l
-
-; *i::p
-; *o::q
-; #IF
-; */
-
-; #IF WinActive("ahk_exe Baka MPlayer.exe") and !GetKeyState("vk1D","P") and !GetKeyState("vkEB","P")
-; *d::
-; 	Send,{Blind}{Left}
-; 	return
-; *f::
-; 	Send,{Blind}{Right}
-; 	return
-; ;mpv seek +300
-; *g::
-; 	Send,{Shift Down}{right}{Shift Up}
-; 	return
-; ;mpv seek -300
-; *s::
-; 	Send,{Shift Down}{left}{Shift Up}
-; 	return
-; *r::
-; 	Send,{Ctrl Down}{right}{Ctrl Up}
-; 	return
-; *4::
-; 	Send,{Ctrl Down}{left}{Ctrl Up}
-; 	return
-; *Enter::
-; 	Send,{Blind}{f}
-; 	return
-; #IF
-
-#IF WinActive("ahk_exe PotPlayerMini64.exe") and !GetKeyState("vk1D","P") and !GetKeyState("vkEB","P")
-*v::
-	Send, {Blind}{Ctrl Down}{right}{Ctrl Up}
+		Progress, m2 b fs18 zh0, English, , , Courier New
+		Sleep, 300
+		Progress, Off
+	}
 	return
-*c::
-	Send, {Blind}{Ctrl Down}{left}{Ctrl Up}
-	return
-*d::
-	Send,{Blind}{Shift Down}{Left}{Shift Up}
-	return
-*f::
-	Send,{Blind}{Shift Down}{Right}{Shift Up}
-	return
-*g::
-	Send,{Alt Down}{Ctrl Down}{right}{Ctrl Up}{Alt Up}
-	return
-*s::
-	Send,{Alt Down}{Ctrl Down}{left}{Ctrl Up}{Alt Up}
-	return
-*r::
-	Send,{Blind}{PgDn}
-	return
-*4::
-	Send,{Blind}{PgUp}
-	return
-*b::
-	Send,{Shift Down}{Delete}{Shift Up}
-	return
-#IF
 
 flg_user_key_flg = 0
-
 #IF flg_user_key_flg == 1 and !GetKeyState("vk1D","P")
 	*f::
 		KeyWait, f
@@ -231,7 +141,130 @@ flg_user_key_flg = 0
 		Send,{Blind}{WheelRight}
 		flg_user_key_flg = 1
 		return
+
+	
+	;;;; windows特有 ;;;;
+	; デスクトップ切り替え（進む）
+	Tab::
+		Send, {Blind}{LWin Down}{Ctrl Down}{Right}{Ctrl Up}{Lwin Up}
+		return
+	; デスクトップ切り替え（戻る）
+	q::
+		Send, {Blind}{LWin Down}{Ctrl Down}{Left}{Ctrl Up}{Lwin Up}
+		return
 #IF
+
+#IF WinActive("ahk_exe PotPlayerMini64.exe") and !GetKeyState("vk1D","P") and !GetKeyState("vkEB","P")
+	*v::
+		Send, {Blind}{Right}
+		return
+	*c::
+		Send, {Blind}{Left}
+		return
+	*f::
+		Send, {Blind}{Ctrl Down}{Right}{Ctrl Up}
+		return
+	*d::
+		Send, {Blind}{Ctrl Down}{Left}{Ctrl Up}
+		return
+	*g::
+		Send,{Alt Down}{Ctrl Down}{Right}{Ctrl Up}{Alt Up}
+		return
+	*s::
+		Send,{Alt Down}{Ctrl Down}{Left}{Ctrl Up}{Alt Up}
+		return
+	*r::
+		Send,{Blind}{PgDn}
+		return
+	*4::
+		Send,{Blind}{PgUp}
+		return
+	*b::
+		Send,{Shift Down}{Delete}{Shift Up}
+		return
+#IF
+
+; global LOG_FILE
+; LOG_FILE=C:\AHK.log
+
+; WriteLog(log)
+; {
+;     logText = [%A_Now%]%log%
+;     FileAppend,  %log%, %LOG_FILE%
+; }
+
+; ;keyswapで
+; ;mac ひらがな→変換 左Win→左Alt 左Alt→左Win
+; ;win 左Ctrl→Caps Caps→左Ctrl
+
+
+; /*
+; #IF A_COMPUTERNAME = "WIN8MBA"
+; ;mbaの独自設定
+; #IF
+; */
+
+; /*
+; #IF A_COMPUTERNAME = "G2120PC"
+; ;デスクトップの独自設定
+; #IF
+; */
+
+; /*
+; SetTimer AutoClose,5000 
+; return 
+
+; AutoClose: 
+; IfWinExist, スポンサーセッション ahk_class #32770 
+; { 
+; ControlClick OK, スポンサーセッション ahk_class #32770 
+; } 
+; return 
+; */
+
+; /*
+; #IF WinActive("ahk_exe GuiltyGearXrd.exe")
+; *vk1D::w
+; *s::a
+; *d::s
+; *f::d
+
+; *vk1C::j
+; *j::u
+; *k::i
+; *l::o
+; *;::l
+
+; *i::p
+; *o::q
+; #IF
+; */
+
+; #IF WinActive("ahk_exe Baka MPlayer.exe") and !GetKeyState("vk1D","P") and !GetKeyState("vkEB","P")
+; *d::
+; 	Send,{Blind}{Left}
+; 	return
+; *f::
+; 	Send,{Blind}{Right}
+; 	return
+; ;mpv seek +300
+; *g::
+; 	Send,{Shift Down}{right}{Shift Up}
+; 	return
+; ;mpv seek -300
+; *s::
+; 	Send,{Shift Down}{left}{Shift Up}
+; 	return
+; *r::
+; 	Send,{Ctrl Down}{right}{Ctrl Up}
+; 	return
+; *4::
+; 	Send,{Ctrl Down}{left}{Ctrl Up}
+; 	return
+; *Enter::
+; 	Send,{Blind}{f}
+; 	return
+; #IF
 
 ; ;vk1D-無変換
 ; ;vkFF-pause
@@ -250,29 +283,6 @@ flg_user_key_flg = 0
 
 ; ;MButton::RButton
 ; ;RButton::MButton
-
-;IME ON/OFF
-*vk1C::
-	KeyWait, vk1C, T0.2    ; 0.2秒以上キーが離されなかったら、ErrorLevel=1
-	if (ErrorLevel) {
-		;長押し
-		IME_SET(1)
-
-		Progress, m2 b fs18 zh0, 日本語, , , Courier New
-		Sleep, 300
-		Progress, Off
-		
-		keywait, vk1C
-	} else {
-		;短押し
-		IME_SET(0)
-		keywait, vk1C
-
-		Progress, m2 b fs18 zh0, English, , , Courier New
-		Sleep, 300
-		Progress, Off
-	}
-	return
 
 ; ;IME ON/OFF bluetooth用 右winを無変換に　日本語キーボードとコードは異なる模様
 ; *vkFF::
