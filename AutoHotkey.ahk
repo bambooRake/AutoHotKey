@@ -5,30 +5,30 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 #InstallKeybdHook
 #UseHook
 
-; ;-----------------------------------------------------------
-; ; IMEの状態をセット
-; ;   SetSts          1:ON / 0:OFF
-; ;   WinTitle="A"    対象Window
-; ;   戻り値          0:成功 / 0以外:失敗
-; ;-----------------------------------------------------------
-; IME_SET(SetSts, WinTitle="A")    {
+;-----------------------------------------------------------
+; IMEの状態をセット
+;   SetSts          1:ON / 0:OFF
+;   WinTitle="A"    対象Window
+;   戻り値          0:成功 / 0以外:失敗
+;-----------------------------------------------------------
+IME_SET(SetSts, WinTitle="A")    {
 	
-; 	ControlGet,hwnd,HWND,,,%WinTitle%
-; 	if	(WinActive(WinTitle))	{
-; 		ptrSize := !A_PtrSize ? 4 : A_PtrSize
-; 	    VarSetCapacity(stGTI, cbSize:=4+4+(PtrSize*6)+16, 0)
-; 	    NumPut(cbSize, stGTI,  0, "UInt")   ;	DWORD   cbSize;
-; 		hwnd := DllCall("GetGUIThreadInfo", Uint,0, Uint,&stGTI)
-; 	             ? NumGet(stGTI,8+PtrSize,"UInt") : hwnd
-; 	}
+	ControlGet,hwnd,HWND,,,%WinTitle%
+	if	(WinActive(WinTitle))	{
+		ptrSize := !A_PtrSize ? 4 : A_PtrSize
+	    VarSetCapacity(stGTI, cbSize:=4+4+(PtrSize*6)+16, 0)
+	    NumPut(cbSize, stGTI,  0, "UInt")   ;	DWORD   cbSize;
+		hwnd := DllCall("GetGUIThreadInfo", Uint,0, Uint,&stGTI)
+	             ? NumGet(stGTI,8+PtrSize,"UInt") : hwnd
+	}
 
 
-;     return DllCall("SendMessage"
-;           , UInt, DllCall("imm32\ImmGetDefaultIMEWnd", Uint,hwnd)
-;           , UInt, 0x0283  ;Message : WM_IME_CONTROL
-;           ,  Int, 0x006   ;wParam  : IMC_SETOPENSTATUS
-;           ,  Int, SetSts) ;lParam  : 0 or 1
-; }
+    return DllCall("SendMessage"
+          , UInt, DllCall("imm32\ImmGetDefaultIMEWnd", Uint,hwnd)
+          , UInt, 0x0283  ;Message : WM_IME_CONTROL
+          ,  Int, 0x006   ;wParam  : IMC_SETOPENSTATUS
+          ,  Int, SetSts) ;lParam  : 0 or 1
+}
 
 ; global LOG_FILE
 ; LOG_FILE=C:\AHK.log
@@ -142,6 +142,97 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 	return
 #IF
 
+flg_user_key_flg = 0
+
+#IF flg_user_key_flg == 1 and !GetKeyState("vk1D","P")
+	*f::
+		KeyWait, f
+		Send,{Blind}{LButton up}
+		flg_user_key_flg = 0
+		return
+	
+	*g::
+		KeyWait, g
+		Send,{Blind}{MButton up}
+		flg_user_key_flg = 0
+		return
+	
+	*v::
+		KeyWait, v
+		Send,{Blind}{RButton up}
+		flg_user_key_flg = 0
+		return
+
+	*r::
+		KeyWait, r
+		flg_user_key_flg = 0
+		return
+
+	*4::
+		KeyWait, 4
+		flg_user_key_flg = 0
+		return
+
+	*t::
+		KeyWait, t
+		flg_user_key_flg = 0
+		return
+
+	*5::
+		KeyWait, 5
+		flg_user_key_flg = 0
+		return
+
+#IF
+
+#IF GetKeyState("vk1D","P")
+	*f::
+		Send,{Blind}{LButton down}
+		flg_user_key_flg = 1
+		KeyWait, f
+		Send,{Blind}{LButton up}
+		flg_user_key_flg = 0
+		return
+
+	*g::
+		Send,{Blind}{MButton down}
+		flg_user_key_flg = 1
+		KeyWait, g
+		Send,{Blind}{MButton up}
+		flg_user_key_flg = 0
+		return
+
+	*v::
+		Send,{Blind}{RButton down}
+		flg_user_key_flg = 1
+		KeyWait, v
+		Send,{Blind}{RButton up}
+		flg_user_key_flg = 0
+		return
+
+	*r::
+		Send,{Blind}{WheelDown}
+		flg_user_key_flg = 1
+		return
+
+	*4::
+		Send,{Blind}{WheelUp}
+		flg_user_key_flg = 1
+		return
+
+	;何故か逆
+	*t::
+		Send,{Blind}{WheelLeft}
+		flg_user_key_flg = 1
+		return
+
+	;何故か逆
+	*5::
+		Send,{Blind}{WheelRight}
+		flg_user_key_flg = 1
+		return
+#IF
+
 ; ;vk1D-無変換
 ; ;vkFF-pause
 ; ;vk1C-変換
@@ -160,28 +251,28 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 ; ;MButton::RButton
 ; ;RButton::MButton
 
-; ;IME ON/OFF
-; *vk1C::
-; 	KeyWait, vk1C, T0.2    ; 0.2秒以上キーが離されなかったら、ErrorLevel=1
-; 	if (ErrorLevel) {
-; 		;長押し
-; 		IME_SET(1)
+;IME ON/OFF
+*vk1C::
+	KeyWait, vk1C, T0.2    ; 0.2秒以上キーが離されなかったら、ErrorLevel=1
+	if (ErrorLevel) {
+		;長押し
+		IME_SET(1)
 
-; 		Progress, m2 b fs18 zh0, 日本語, , , Courier New
-; 		Sleep, 500
-; 		Progress, Off
+		Progress, m2 b fs18 zh0, 日本語, , , Courier New
+		Sleep, 300
+		Progress, Off
 		
-; 		keywait, vk1C
-; 	} else {
-; 		;短押し
-; 		IME_SET(0)
-; 		keywait, vk1C
+		keywait, vk1C
+	} else {
+		;短押し
+		IME_SET(0)
+		keywait, vk1C
 
-; 		Progress, m2 b fs18 zh0, English, , , Courier New
-; 		Sleep, 500
-; 		Progress, Off
-; 	}
-; 	return
+		Progress, m2 b fs18 zh0, English, , , Courier New
+		Sleep, 300
+		Progress, Off
+	}
+	return
 
 ; ;IME ON/OFF bluetooth用 右winを無変換に　日本語キーボードとコードは異なる模様
 ; *vkFF::
